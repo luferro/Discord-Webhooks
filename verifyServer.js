@@ -1,13 +1,13 @@
-import { checkSource } from '../Utils/checkSource.js';
-import { checkOpencritic } from '../Utils/checkOpencritic.js';
+import { checkSource } from './Utils/checkSource.js';
+import { checkReviews } from './Utils/checkReviews.js';
 
 let serverRestarted = true;
 
-const { opencritic_id } = await checkOpencritic();
+const { id } = await checkReviews();
 
 const webhookOptions = [
 	{ option: 'News', url: 'https://www.reddit.com/r/Games/new.json' },
-	{ option: 'Reviews', url: `https://api.opencritic.com/api/game/${opencritic_id}` },
+	{ option: 'Reviews', url: `https://api.opencritic.com/api/game/${id}` },
 	{ option: 'Deals', url: 'https://www.reddit.com/r/GameDeals/new.json' },
 	{ option: 'FreeGames', url: 'https://www.reddit.com/r/GameDealsFree/new.json' },
 	{ option: 'Xbox', url: 'https://news.xbox.com/en-us/xbox-game-pass/' },

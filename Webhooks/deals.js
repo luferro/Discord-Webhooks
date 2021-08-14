@@ -13,7 +13,7 @@ export const getDeals = async () => {
 	try {
 		const res = await fetch('https://www.reddit.com/r/GameDeals/new.json');
 		const deals = res.headers.get('Content-Type')?.includes('application/json') ? await res.json() : await res.text();
-		if(!res.ok) return console.log(`${res.status} - ${deals}`);
+		if(!res.ok) return console.log(`${res.status} - ${res.statusText}`);
 
 		if(deals.data.children.length === 0) return;
 

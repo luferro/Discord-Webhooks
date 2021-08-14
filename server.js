@@ -1,5 +1,5 @@
 import 'dotenv/config.js';
-import verifyServer from './Webhooks/verifyServer.js';
+import verifyServer from './verifyServer.js';
 import { getReviews } from './Webhooks/reviews.js';
 import { getDeals } from './Webhooks/deals.js';
 import { getFreeGames } from './Webhooks/freegames.js';

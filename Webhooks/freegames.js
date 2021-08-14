@@ -13,7 +13,7 @@ export const getFreeGames = async () => {
 	try {
 		const res = await fetch('https://www.reddit.com/r/GameDealsFree/new.json');
 		const games = res.headers.get('Content-Type')?.includes('application/json') ? await res.json() : await res.text();
-		if(!res.ok) return console.log(`${res.status} - ${games}`);
+		if(!res.ok) return console.log(`${res.status} - ${res.statusText}`);
 
 		if(games.data.children.length === 0) return;
 		

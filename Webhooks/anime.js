@@ -30,7 +30,7 @@ export const getAnime = async () => {
 	try {
 		const res = await fetch('https://www.reddit.com/r/anime/search.json?q=flair_name%3A%22Episode%22&restrict_sr=1&sort=new');
 		const anime = res.headers.get('Content-Type')?.includes('application/json') ? await res.json() : await res.text();
-        if(!res.ok) return console.log(`${res.status} - ${anime}`);
+        if(!res.ok) return console.log(`${res.status} - ${res.statusText}`);
 
 		if(anime.data.children.length === 0) return;
 
@@ -58,7 +58,7 @@ export const getAnime = async () => {
 		webhook.send({
 			embeds: [
 				new MessageEmbed()
-					.setTitle(title.includes('discussion') ? title.replace('discussion', '').trim() : title)
+					.setTitle(title.replace(/Discussion|discussion/, '').trim())
                     .addField('**Streams**', animeStreamsFormatted.length > 0 ? animeStreamsFormatted.join('\n') : 'N/A')
                     .addField('**Anime Information**', animeInfoFormatted.length > 0 ? animeInfoFormatted.join('\n') : 'N/A')
                     .addField('**Total episodes**', episodesCount ? episodesCount : 'N/A', true)

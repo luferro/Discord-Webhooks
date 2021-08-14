@@ -7,8 +7,8 @@ export const checkAnime = async(id) => {
         const res = await fetch(`https://api.jikan.moe/v3/anime/${id}`);
         const data = await res.json();
 
-        const lastDotImage = data.image_url.lastIndexOf('.');
-        const image = `${data.image_url.substring(0, lastDotImage)}l.${data.image_url.substring(lastDotImage + 1)}`
+        const lastDotImage = data.image_url?.lastIndexOf('.');
+        const image = lastDotImage && `${data.image_url.substring(0, lastDotImage)}l.${data.image_url.substring(lastDotImage + 1)}`
 
         return { episodesCount: data.episodes, score: data.score, image } 
     } catch (error) {

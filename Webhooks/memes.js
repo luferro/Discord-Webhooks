@@ -17,7 +17,7 @@ export const getMemes = async () => {
             const res = await fetch(`https://www.reddit.com/r/${subreddit}.json`);
             const memes = res.headers.get('Content-Type')?.includes('application/json') ? await res.json() : await res.text();
             if(!res.ok) {
-                console.log(`${res.status} - ${memes}`);
+                console.log(`${res.status} - ${res.statusText}`);
                 continue;
             }
 

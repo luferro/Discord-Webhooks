@@ -11,7 +11,7 @@ export const getManga = async () => {
 	try {
 		const res = await fetch('https://www.reddit.com/r/manga/search.json?q=flair_name%3A%22DISC%22&restrict_sr=1&sort=new');
 		const manga = res.headers.get('Content-Type')?.includes('application/json') ? await res.json() : await res.text();
-        if(!res.ok) return console.log(`${res.status} - ${manga}`);
+        if(!res.ok) return console.log(`${res.status} - ${res.statusText}`);
 
 		if(manga.data.children.length === 0) return;
 
@@ -20,9 +20,9 @@ export const getManga = async () => {
         const url = manga.data.children[0].data.url;
 		const isNSFW = manga.data.children[0].data.whitelist_status === 'promo_adult_nsfw' ? true : false;
 
-        if(urls.includes(url) || url.includes('https://www.reddit.com/r/manga') || !titleFormatted) return;
+        if(urls.includes(url) || url.includes('https://www.reddit.com/r/manga') || !titleFormatted || isNSFW) return;
 
-		webhook.send(`**${isNSFW ? `[NSFW] ${titleFormatted}` : titleFormatted}**\n<${url.includes('/r/') ? `https://www.reddit.com${url}` : url}>`);
+		webhook.send(`**${titleFormatted}**\n<${url.includes('/r/') ? `https://www.reddit.com${url}` : url}>`);
 
 		urls.push(url);
 	} catch (error) {

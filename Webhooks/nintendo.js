@@ -13,7 +13,7 @@ export const getNintendo = async () => {
 	try {
 		const res = await fetch('https://www.reddit.com/r/NintendoSwitch/search.json?q=flair_name%3A%22News%22&restrict_sr=1&sort=new');
 		const articles = res.headers.get('Content-Type')?.includes('application/json') ? await res.json() : await res.text();
-		if(!res.ok) return console.log(`${res.status} - ${articles}`);
+		if(!res.ok) return console.log(`${res.status} - ${res.statusText}`);
 
 		if(articles.data.children.length === 0) return;
 

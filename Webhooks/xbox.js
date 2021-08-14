@@ -2,6 +2,7 @@ import { WebhookClient, MessageEmbed } from 'discord.js';
 import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 import { urls } from '../server.js';
+import { getVideoID } from '../Utils/checkYoutube.js';
 
 const webhook = new WebhookClient(
 	process.env.WEBHOOK_XBOX_ID,
@@ -11,10 +12,14 @@ const webhook = new WebhookClient(
 export const getXbox = async () => {
 	const random = Math.floor(Math.random() * 16777215).toString(16);
 
-	const options = ['https://news.xbox.com/en-us/xbox-game-pass/', 'https://news.xbox.com/en-us/consoles/', 'https://majornelson.com/category/xbox-store/'];
+	const options = [
+		{ name: 'gamepass', url: 'https://news.xbox.com/en-us/xbox-game-pass/' }, 
+		{ name: 'consoles', url: 'https://news.xbox.com/en-us/consoles/'},
+		{ name: 'deals', url: 'https://majornelson.com/category/xbox-store/'}
+	];
 	try {
 		for (const option of options) {
-			const res = await fetch(option);
+			const res = await fetch(option.url);
 			const body = await res.text();
 			const $ = cheerio.load(body);
 
@@ -22,39 +27,37 @@ export const getXbox = async () => {
 
 			const title = $('.archive-main .media .media-body .feed__title a').first().text();
 			const url = $('.archive-main .media .media-body .feed__title a').first().attr('href');
-			const feedType = $('.archive-main .media .media-body .feed__type a').first().text();
-			const feedTypeURL = $('.archive-main .media .media-body .feed__type a').first().attr('href');
 			const video = hasVideo ? $('.archive-main .media .media-image .video-wrapper').first().attr('data-src') : null;
 			const image = hasVideo ? $('.archive-main .media .media-image .video-wrapper img').first().attr('src') : $('.archive-main .media .media-image a img').first().attr('src');
 
+			const videoID = hasVideo ? getVideoID(video.split('?')[0]) : 'dQw4w9WgXcQ';
+			const videoURL = `https://www.youtube.com/watch?v=${videoID}`;
+			
 			if(
 				urls.includes(url) ||
-				(option === options[0] && !title.toUpperCase().includes('XBOX GAME PASS'))
+				(option.name === 'gamepass' && !title.toUpperCase().includes('XBOX GAME PASS')) ||
+				(option.name === 'deals' && !title.toUpperCase().includes('DEALS WITH GOLD'))
 			) 
-				return;
+				continue;
 
 			if(video) {
-				webhook.send({
-					embeds: [
-						new MessageEmbed()
-							.setTitle(title)
-							.setURL(url)
-							.addField('**Category**', `[${feedType}](${feedTypeURL})`)
-							.addField('**Youtube**', `[Here!](${video})`)
-							.setImage(image)
-							.setColor(random)
-					],
-				});
+				webhook.send(`**${title}**\n${videoURL}`);
 			}
 			else {
 				webhook.send({
 					embeds: [
-						new MessageEmbed()
-							.setTitle(title)
-							.setURL(url)
-							.addField('**Category**', `[${feedType}](${feedTypeURL})`)
-							.setImage(image)
-							.setColor(random)
+						option.name === 'gamepass' ?
+							new MessageEmbed()
+								.setTitle(title)
+								.setURL(url)
+								.setImage(image)
+								.setColor(random)
+							:
+							new MessageEmbed()
+								.setTitle(title)
+								.setURL(url)
+								.setThumbnail(image)
+								.setColor(random)
 					],
 				});
 			}

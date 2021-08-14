@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 const videos = [];
 
 const fixYoutubeURL = (url) => {
+    if(url.includes('embed')) return url.split('/')[4];
     return url.split('/')[3];
 } 
 
@@ -19,10 +20,17 @@ const getChannelID = async(url) => {
     }
 }
 
+export const getVideoID = url => {
+    const newURL = fixYoutubeURL(url);
+    const videoID = newURL.match(/([A-z0-9_.\-~]{11})/g);
+
+    return videoID[0];
+}
+
 export const checkSubscribers = async(channel, type, url) => {
     try {
         const filteredVideos = videos.filter(item => item.url === url);
-        if(filteredVideos.length > 0) return filteredVideos[0].subscribers;
+        if(filteredVideos.length > 0) return -1;
         
         const option = type === 'channel' || type === 'custom' ? 'id' : 'forUsername';
         const channelID = type === 'custom' ? await getChannelID(url) : channel;

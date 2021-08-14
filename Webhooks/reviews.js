@@ -1,7 +1,7 @@
 import { WebhookClient, MessageEmbed } from 'discord.js';
 import fetch from 'node-fetch';
 import { urls } from '../server.js';
-import { checkOpencritic } from '../Utils/checkOpencritic.js';
+import { checkReviews } from '../Utils/checkReviews.js';
 
 const webhook = new WebhookClient(
 	process.env.WEBHOOK_REVIEWS_ID,
@@ -12,22 +12,22 @@ export const getReviews = async () => {
 	const random = Math.floor(Math.random() * 16777215).toString(16);
 
 	try {
-		const { opencritic_id, opencritic_url } = await checkOpencritic();
+		const { id, url } = await checkReviews();
+		if(!id || urls.includes(url)) return;
 
-		const res = await fetch(`https://api.opencritic.com/api/game/${opencritic_id}`);
+		const res = await fetch(`https://api.opencritic.com/api/game/${id}`);
 		const reviews = res.headers.get('Content-Type')?.includes('application/json') ? await res.json() : await res.text();
-		if(!res.ok) return console.log(`${res.status} - ${reviews}`);;
+		if(!res.ok) return console.log(`${res.status} - ${res.statusText}`);
 
 		const title = reviews.name;
 		const image = reviews.bannerScreenshot ? `https:${reviews.bannerScreenshot.fullRes}` : null;
-		const url = opencritic_url;
 		const releaseDate = reviews.firstReleaseDate.split('T')[0];
 		const count = reviews.numReviews;
 		const score = Math.round(reviews.topCriticScore);
 		const tier = reviews.tier;
 		const platforms = reviews.Platforms.map(platform => `> ${platform.name}`);
 
-		if(urls.includes(url) || (!tier && score === -1)) return;
+		if(!tier && score === -1) return;
 
 		webhook.send({
 			embeds: [
