@@ -46,7 +46,7 @@ export const getXbox = async () => {
 			else {
 				webhook.send({
 					embeds: [
-						option.name === 'gamepass' ?
+						option.name === 'gamepass' && title.toUpperCase().includes('COMING SOON') ?
 							new MessageEmbed()
 								.setTitle(title)
 								.setURL(url)

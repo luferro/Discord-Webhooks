@@ -39,7 +39,7 @@ export const getReviews = async () => {
 					.addField('**Tier**', tier ? tier : 'N/A', true)
 					.addField('**Score**', score && score > 0 ? score : 'N/A', true)
 					.addField('**Reviews count**', count ? count : 'N/A', true)					
-					.setImage(image ? image : '')
+					.setThumbnail(image ? image : '')
 					.setFooter('Powered by OpenCritic')
 					.setColor(random)
 			]

@@ -21,17 +21,20 @@ export const getNews = async () => {
 		const title = articles.data.children[0].data.title.slice(0, 256);
 		const url = articles.data.children[0].data.url;
 		const hasMedia = articles.data.children[0].data.secure_media;
+
 		const isVideo = hasMedia && hasMedia.type === 'youtube.com';
+		const isTweet = hasMedia && hasMedia.type === 'twitter.com';
 
 		const channelType = hasMedia && (hasMedia.oembed.author_url?.includes('channel') ? 'channel' : hasMedia.oembed.author_url.includes('user') ? 'user' : 'custom');
 		const channel = hasMedia && hasMedia.oembed.author_url?.split(`/${channelType}/`)[1];
 
-		const subscribers = isVideo ? await checkSubscribers(channel, channelType, url) : null;
-		const videoID = isVideo ? getVideoID(url) : 'dQw4w9WgXcQ';
-		const videoURL = `https://www.youtube.com/watch?v=${videoID}`;
+		const subscribers = isVideo && await checkSubscribers(channel, channelType, url);
+		const videoID = isVideo && getVideoID(url);
+
+		const newsURL = isVideo ? `https://www.youtube.com/watch?v=${videoID}` : isTweet ? url.split('?')[0] : url;
 
 		if(
-			urls.includes(isVideo ? videoURL : url) ||
+			urls.includes(newsURL) ||
 			title.toUpperCase().includes('REVIEW') ||
 			title.length > 256 ||
 			url.includes('https://www.reddit.com/r/Games') ||
@@ -40,7 +43,7 @@ export const getNews = async () => {
 			return;
 
 		if(hasMedia) {
-			webhook.send(`**${title}**\n${isVideo ? videoURL : url}`);
+			webhook.send(`**${title}**\n${newsURL}`);
 		} 
 		else {
 			webhook.send({
@@ -53,7 +56,7 @@ export const getNews = async () => {
 			});
 		}
 
-		urls.push(isVideo ? videoURL : url);
+		urls.push(newsURL);
 	} catch (error) {
 		console.log(error);
 	}

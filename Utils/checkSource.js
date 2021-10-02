@@ -59,19 +59,6 @@ export const checkSource = async(url, option) => {
 				urls.push(url);
 				break;
 			}
-			case 'NSFW': {
-				const sortedPosts = data.data.children.sort((a, b) => b.data.created_utc - a.data.created_utc);
-
-				const index = sortedPosts.findIndex(item => !item.data.stickied && !item.data.is_video && !item.data.removed_by_category);
-				if(index === -1) return;
-
-				const hasMedia = sortedPosts[index].data.secure_media;
-				const imageSplit = hasMedia && hasMedia.oembed.thumbnail_url.split('-');
-				const url = hasMedia ? hasMedia.oembed.thumbnail_url.replace(imageSplit[1], 'small.gif') : sortedPosts[index].data.url;
-
-				urls.push(url);
-				break;
-			}
 			default:
 				break;
 		}

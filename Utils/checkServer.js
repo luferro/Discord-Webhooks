@@ -1,11 +1,11 @@
-import { checkSource } from './Utils/checkSource.js';
-import { checkReviews } from './Utils/checkReviews.js';
+import { checkReviews } from './checkReviews.js';
+import { checkSource } from './checkSource.js';
 
 let serverRestarted = true;
 
 const { id } = await checkReviews();
 
-const webhookOptions = [
+const sources = [
 	{ option: 'News', url: 'https://www.reddit.com/r/Games/new.json' },
 	{ option: 'Reviews', url: `https://api.opencritic.com/api/game/${id}` },
 	{ option: 'Deals', url: 'https://www.reddit.com/r/GameDeals/new.json' },
@@ -22,9 +22,7 @@ const webhookOptions = [
 	{ option: 'Memes', url: 'https://www.reddit.com/r/ProgrammerHumor.json' }
 ];
 
-const verifyServer = async () => {
-	if(serverRestarted) webhookOptions.forEach(item => checkSource(item.url, item.option));
+export const checkServer = async () => {
+	if(serverRestarted) sources.forEach(item => checkSource(item.url, item.option));
 	serverRestarted = false;
 };
-
-export default verifyServer;

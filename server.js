@@ -1,5 +1,4 @@
-import 'dotenv/config.js';
-import verifyServer from './verifyServer.js';
+import 'dotenv/config';
 import { getReviews } from './Webhooks/reviews.js';
 import { getDeals } from './Webhooks/deals.js';
 import { getFreeGames } from './Webhooks/freegames.js';
@@ -10,11 +9,13 @@ import { getNintendo } from './Webhooks/nintendo.js';
 import { getAnime } from './Webhooks/anime.js';
 import { getManga } from './Webhooks/manga.js';
 import { getMemes } from './Webhooks/memes.js';
+import { getNSFW } from './Webhooks/nsfw.js';
+import { checkServer } from './Utils/checkServer.js';
 
 export const urls = [];
 
-setInterval(() => {
-	verifyServer();
+setInterval(() => { 
+	checkServer();
 }, 1000 * 60);
 
 setInterval(() => {
@@ -28,4 +29,5 @@ setInterval(() => {
 	getAnime();
 	getManga();
 	getMemes();
+	getNSFW();
 }, 1000 * 60 * 5);

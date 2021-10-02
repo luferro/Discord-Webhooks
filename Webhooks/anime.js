@@ -42,13 +42,13 @@ export const getAnime = async () => {
 			name: item.name,
 			url: selftext.find(nestedItem => nestedItem.includes(item.url))?.match(/(?<=\()(.*)(?=\))/g)[0]
 		})).filter(item => item.url !== undefined);
-		const animeStreamsFormatted = animeStreamsInfo.map(item => `> [${item.name}](${item.url})`);
+		const animeStreamsFormatted = animeStreamsInfo.map(item => `> **[${item.name}](${item.url})**`);
 
 		const animeAggregatorsInfo = animeAggregators.map(item => ({
 			name: item.name,
 			url: selftext.find(nestedItem => nestedItem.includes(item.url))?.match(/(?<=\()(.*)(?=\))/g)[0]
 		})).filter(item => item.url !== undefined);
-		const animeInfoFormatted = animeAggregatorsInfo.map(item => `> [${item.name}](${item.url})`);
+		const animeInfoFormatted = animeAggregatorsInfo.map(item => `> **[${item.name}](${item.url})**`);
 
         if(urls.includes(url)) return;
 		
