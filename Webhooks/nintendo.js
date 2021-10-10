@@ -10,35 +10,31 @@ const webhook = new WebhookClient(
 export const getNintendo = async () => {
 	const random = Math.floor(Math.random() * 16777215).toString(16);
 
-	try {
-		const res = await fetch('https://www.reddit.com/r/NintendoSwitch/search.json?q=flair_name%3A%22News%22&restrict_sr=1&sort=new');
-		const articles = res.headers.get('Content-Type')?.includes('application/json') ? await res.json() : await res.text();
-		if(!res.ok) return console.log(`${res.status} - ${res.statusText}`);
+	const res = await fetch('https://www.reddit.com/r/NintendoSwitch/search.json?q=flair_name%3A%22News%22&restrict_sr=1&sort=new');
+	const articles = res.headers.get('Content-Type')?.includes('application/json') ? await res.json() : await res.text();
+	if(!res.ok) return console.log(`getNintendo: got a status code of ${res.status} - ${res.statusText}`);
 
-		if(articles.data.children.length === 0) return;
+	if(articles.data.children.length === 0) return;
 
-		const title = articles.data.children[0].data.title.slice(0, 256);
-		const url = articles.data.children[0].data.url;
-		const hasMedia = articles.data.children[0].data.secure_media;
+	const title = articles.data.children[0].data.title.slice(0, 256);
+	const url = articles.data.children[0].data.url;
+	const hasMedia = articles.data.children[0].data.secure_media;
 
-		if(urls.includes(url) || url.includes('https://www.reddit.com/r/NintendoSwitch')) return;
+	if(urls.includes(url) || url.includes('https://www.reddit.com/r/NintendoSwitch')) return;
 
-		if(hasMedia) {
-			webhook.send(`**${title}**\n${url}`);
-		} 
-		else {
-			webhook.send({
-				embeds: [
-					new MessageEmbed()
-						.setTitle(title)
-						.setURL(url.includes('/r/') ? `https://www.reddit.com${url}` : url)
-						.setColor(random)
-				]
-			});
-		}
-
-		urls.push(url);
-	} catch (error) {
-		console.log(error);
+	if(hasMedia) {
+		webhook.send(`**${title}**\n${url}`);
+	} 
+	else {
+		webhook.send({
+			embeds: [
+				new MessageEmbed()
+					.setTitle(title)
+					.setURL(url.includes('/r/') ? `https://www.reddit.com${url}` : url)
+					.setColor(random)
+			]
+		});
 	}
+
+	urls.push(url);
 };

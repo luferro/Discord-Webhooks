@@ -5,7 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "deploy": "git add . && git commit -am Heroku && git push heroku master"
   },
   "keywords": [],
   "author": "Luís Ferro",

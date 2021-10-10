@@ -17,54 +17,52 @@ export const getXbox = async () => {
 		{ name: 'consoles', url: 'https://news.xbox.com/en-us/consoles/'},
 		{ name: 'deals', url: 'https://majornelson.com/category/xbox-store/'}
 	];
-	try {
-		for (const option of options) {
-			const res = await fetch(option.url);
-			const body = await res.text();
-			const $ = cheerio.load(body);
 
-			const hasVideo = $('.archive-main .media .media-image').first().children().hasClass('video-wrapper');
+	for(const option of options) {
+		const res = await fetch(option.url);
+		if(!res.ok) return console.log(`getXbox: got a status code of ${res.status} - ${res.statusText}`);
+		const body = await res.text();
+		const $ = cheerio.load(body);
 
-			const title = $('.archive-main .media .media-body .feed__title a').first().text();
-			const url = $('.archive-main .media .media-body .feed__title a').first().attr('href');
-			const video = hasVideo ? $('.archive-main .media .media-image .video-wrapper').first().attr('data-src') : null;
-			const image = hasVideo ? $('.archive-main .media .media-image .video-wrapper img').first().attr('src') : $('.archive-main .media .media-image a img').first().attr('src');
+		const hasVideo = $('.archive-main .media .media-image').first().children().hasClass('video-wrapper');
 
-			const videoID = hasVideo ? getVideoID(video.split('?')[0]) : 'dQw4w9WgXcQ';
-			const videoURL = `https://www.youtube.com/watch?v=${videoID}`;
-			
-			if(
-				urls.includes(url) ||
-				(option.name === 'gamepass' && !title.toUpperCase().includes('XBOX GAME PASS')) ||
-				(option.name === 'deals' && !title.toUpperCase().includes('DEALS WITH GOLD'))
-			) 
-				continue;
+		const title = $('.archive-main .media .media-body .feed__title a').first().text();
+		const url = $('.archive-main .media .media-body .feed__title a').first().attr('href');
+		const video = hasVideo ? $('.archive-main .media .media-image .video-wrapper').first().attr('data-src') : null;
+		const image = hasVideo ? $('.archive-main .media .media-image .video-wrapper img').first().attr('src') : $('.archive-main .media .media-image a img').first().attr('src');
 
-			if(video) {
-				webhook.send(`**${title}**\n${videoURL}`);
-			}
-			else {
-				webhook.send({
-					embeds: [
-						option.name === 'gamepass' && title.toUpperCase().includes('COMING SOON') ?
-							new MessageEmbed()
-								.setTitle(title)
-								.setURL(url)
-								.setImage(image)
-								.setColor(random)
-							:
-							new MessageEmbed()
-								.setTitle(title)
-								.setURL(url)
-								.setThumbnail(image)
-								.setColor(random)
-					],
-				});
-			}
+		const videoID = hasVideo ? getVideoID(video.split('?')[0]) : 'dQw4w9WgXcQ';
+		const videoURL = `https://www.youtube.com/watch?v=${videoID}`;
+		
+		if(
+			urls.includes(url) ||
+			(option.name === 'gamepass' && !title.toUpperCase().includes('XBOX GAME PASS')) ||
+			(option.name === 'deals' && !title.toUpperCase().includes('DEALS WITH GOLD'))
+		) 
+			continue;
 
-			urls.push(url);	
+		if(video) {
+			webhook.send(`**${title}**\n${videoURL}`);
 		}
-	} catch (error) {
-		console.log(error);
+		else {
+			webhook.send({
+				embeds: [
+					option.name === 'gamepass' && title.toUpperCase().includes('COMING SOON') ?
+						new MessageEmbed()
+							.setTitle(title)
+							.setURL(url)
+							.setImage(image)
+							.setColor(random)
+						:
+						new MessageEmbed()
+							.setTitle(title)
+							.setURL(url)
+							.setThumbnail(image)
+							.setColor(random)
+				]
+			});
+		}
+
+		urls.push(url);	
 	}
 };

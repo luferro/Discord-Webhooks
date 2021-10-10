@@ -8,30 +8,27 @@ const searchOpencritic = async(game) => {
 }
 
 export const checkReviews = async() => {
-    try {
-        const res = await fetch('https://www.reddit.com/r/Games/search.json?q=flair_name%3A%22Review%20Thread%22&restrict_sr=1&sort=new');
-        const games = res.headers.get('Content-Type')?.includes('application/json') ? await res.json() : await res.text();
+    const res = await fetch('https://www.reddit.com/r/Games/search.json?q=flair_name%3A%22Review%20Thread%22&restrict_sr=1&sort=new');
+    const games = res.headers.get('Content-Type')?.includes('application/json') ? await res.json() : await res.text();
+    if(!res.ok) return console.log(`checkReviews ${res.status} - ${res.statusText}`);
 
-        if(games.data?.children.length === 0) return;
+    if(games.data.children.length === 0) return;
 
-        const selftext = games.data.children[0]?.data.selftext.split('\n');
-        const opencritic = selftext?.find(item => item.includes('https://opencritic.com/game/'));
+    const selftext = games.data.children[0]?.data.selftext.split('\n');
+    const opencritic = selftext?.find(item => item.includes('https://opencritic.com/game/'));
 
-        if(!opencritic) {
-            const metacritic = selftext?.find(item => item.includes('https://www.metacritic.com/game/'));
-            if(!metacritic) return { id: null, url: null };
+    if(!opencritic) {
+        const metacritic = selftext?.find(item => item.includes('https://www.metacritic.com/game/'));
+        if(!metacritic) return { id: null, url: null };
 
-            const game = metacritic.split('/')[5];
-            const { id, url } = await searchOpencritic(game);
+        const game = metacritic.split('/')[5];
+        const { id, url } = await searchOpencritic(game);
 
-            return { id, url };
-        }
-
-        const url = opencritic.match(/(?<=\()(.*)(?=\))/g);
-        const id = url[0].match(/\d+/g);
-
-        return { id: id[0], url: url[0] };
-    } catch (error) {
-        console.log(error);
+        return { id, url };
     }
+
+    const url = opencritic.match(/(?<=\()(.*)(?=\))/g);
+    const id = url[0].match(/\d+/g);
+
+    return { id: id[0], url: url[0] };
 }
