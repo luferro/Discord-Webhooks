@@ -24,7 +24,7 @@ export const getNews = async () => {
 	const isVideo = hasMedia && hasMedia.type === 'youtube.com';
 	const isTweet = hasMedia && hasMedia.type === 'twitter.com';
 
-	const channelType = hasMedia && (hasMedia.oembed.author_url?.includes('channel') ? 'channel' : hasMedia.oembed.author_url.includes('user') ? 'user' : 'custom');
+	const channelType = hasMedia && (hasMedia.oembed.author_url?.includes('channel') ? 'channel' : hasMedia.oembed.author_url?.includes('user') ? 'user' : 'custom');
 	const channel = hasMedia && hasMedia.oembed.author_url?.split(`/${channelType}/`)[1];
 
 	const subscribers = isVideo && await checkSubscribers(channel, channelType, url);

@@ -20,7 +20,10 @@ export const getXbox = async () => {
 
 	for(const option of options) {
 		const res = await fetch(option.url);
-		if(!res.ok) return console.log(`getXbox: got a status code of ${res.status} - ${res.statusText}`);
+		if(!res.ok) { 
+			console.log(`getXbox: got a status code of ${res.status} - ${res.statusText}`);
+			continue;
+		}
 		const body = await res.text();
 		const $ = cheerio.load(body);
 

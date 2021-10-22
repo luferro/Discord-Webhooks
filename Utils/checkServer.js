@@ -6,6 +6,9 @@ import { checkReviews } from './checkReviews.js';
 let serverRestarted = true;
 
 export const checkServer = async () => {
+	if(!serverRestarted) return;
+	console.log('checkServer: Server has been restarted.');
+
 	const { id } = await checkReviews();
 
 	const sources = [
@@ -25,10 +28,8 @@ export const checkServer = async () => {
 		{ option: 'Memes', url: 'https://www.reddit.com/r/ProgrammerHumor.json' }
 	];
 
-	if(serverRestarted) {
-		for(const source of sources) {
-			await checkSource(source.url, source.option);
-		}
+	for(const source of sources) {
+		await checkSource(source.url, source.option);
 	}
 
 	serverRestarted = false;
@@ -37,9 +38,9 @@ export const checkServer = async () => {
 const checkSource = async(url, option) => {
 	const res = await fetch(url);
 	const data = res.headers.get('Content-Type')?.includes('application/json') ? await res.json() : await res.text();
-	if(!res.ok) console.log(`${option}: ${res.status} - ${data}`);
+	if(!res.ok) return console.log(`${option}: ${res.status} - ${data}`);
 
-	switch (res.ok && option) {
+	switch (option) {
 		case 'News':
 		case 'Deals':
 		case 'FreeGames':
